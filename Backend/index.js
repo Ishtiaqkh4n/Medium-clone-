@@ -1,14 +1,22 @@
-const app = require("./app")
-const mongoose = require('mongoose')
+import app from "./app.js"
+import dotenv from "dotenv"
+import connectDb from "./db/db.connect.js"
+dotenv.config({
+    path:"./.env"
+}
+)
 
+const PORT  = process.env.PORT || 8000
 
 // connecting to the mongoose then starting the backend
-
-mongoose.connect(process.env.DBURI).then(() => { 
+connectDb()
+.then(()=>{
 
     app.listen(process.env.PORT,() => { 
-        console.log(`Backend successfully started and running on ${process.env.PORT}`)
+        console.log(`Backend successfully started and running on http://localhost:${PORT}`)
      })
- }).catch((err) => { 
-    console.error(`Backend faild to start: ${err.message}`)
-  })
+})
+
+
+
+
