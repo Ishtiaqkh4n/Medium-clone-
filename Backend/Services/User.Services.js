@@ -13,12 +13,35 @@ class UserServices {
         this.#account = new Appwrite.Account(this.#Client);
     }
 
+
+     async createAccount({ email, password, name }) {
+
+        try {
+            return await this.account.create({userId:ID.unique(), email, password, name});
+
+        } catch (error) {
+           
+            return null
+        }
+
+    }
+
     async getLoggedInUser() {
 
         try {
             return await this.#account.get();
         } catch (error) {
             console.error('Error fetching logged-in user:', error);
+            return null
+        }
+    }
+
+     async logOutUser() {
+        try {
+            await this.#account.deleteSessions()
+
+        } catch (error) {
+            console.error(error)
             return null
         }
     }
@@ -32,5 +55,18 @@ class UserServices {
         }
     };
 
+   async deleteLoggedInUser() {
+    try {
+        await this.#account.delete();
+        return true;
+    } catch (error) {
+        console.log('Error occurred during deleting the user:', error);
+        return null;
+    }
+   }
+      
 
 }
+
+const userServices = new UserServices()
+export default userServices
