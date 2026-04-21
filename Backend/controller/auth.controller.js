@@ -85,7 +85,10 @@ const LoginUser = asyncHandler(async(req , res)=>{
     }
 
     const accessToken = await user.generateAccessToken()
-
+    const refreshToken = await user.generateRefreshToken()
+  
+    user.refreshToken = refreshToken
+    await user.save({validateBeforeSave:false})
 
     const LoginedUser = await User.findById(user._id).select(
           "-password -refreshToken"
@@ -99,6 +102,7 @@ const LoginUser = asyncHandler(async(req , res)=>{
     
     return res
     .status(200)
+    .cookie("refreshToken",refreshToken,options)
     .cookie("accessToken",accessToken,options)
     .json(
         new ApiResponse(
@@ -110,6 +114,7 @@ const LoginUser = asyncHandler(async(req , res)=>{
 })
 
 const LogoutUser = asyncHandler(async(req , res)=>{
+    
     
 })
 
