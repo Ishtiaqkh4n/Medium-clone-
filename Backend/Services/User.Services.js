@@ -26,7 +26,7 @@ class UserServices {
 
     }
 
-    async getLoggedInUser() {
+    async getLoggedInUser(token) {
 
         try {
             return await this.#account.get();
