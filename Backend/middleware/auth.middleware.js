@@ -18,12 +18,26 @@ const VerifyJwt = asyncHandler(async(req ,res ,next)=>{
     //decoded it verify it with the key
     const decoded_token = jwt.verify(token,process.env.ACCESS_TOKEN_EXPIRY)
 
+    if(!decoded_token){
+        throw new ApiError(
+            404,
+            "Invalide accessToken"
+        )
+    }
+    
     const user = await User.findById(decoded_token?._id)
 
     if(!user){
         throw new ApiError(
             404,
             "Invalid acesstoken"
+        )
+    }
+    //checking if tHE RT matches the AT
+    if(user.refreshToken !==token){
+        throw new ApiError(
+            404,
+            "nice try stealer fuck you"
         )
     }
     //attach the user to the request object 
