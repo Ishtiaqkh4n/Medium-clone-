@@ -1,54 +1,69 @@
-import mongoose,{Schema}  from "mongoose"
+import mongoose, { Schema } from "mongoose"
 import bcrypt from "bcryptjs"
+import jwt from 'jsonwebtoken'
 
 const UserSchema = new Schema({
     avatar: {
-      type: {
-        url: String,
-        localPath: String,
-      },
-      default: {
-        url: `https://placehold.co/200x200`,
-        localPath: "",
-      },
+        url: {
+            type: String,
+            default: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+        },
+        public_id: {
+            type: String
+        }
     },
-    username:{
-        type:String,
-        required:true,
-        unique:true,
-        minLength:5,
-        maxLength:20
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        minLength: 5,
+        maxLength: 20
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
-        trim:true,
-        lowercase:true
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true
     },
-    password:{
-        type:String,
-        required:true,
-        minLength:8
+    password: {
+        type: String,
+        required: true,
+        minLength: 8
     },
-    accessTokem:{
-        type:String
-    },
-    refreshToken:{
-        type:String
+
+    refreshToken: {
+        type: [String]
     }
 })
 
 
 //hash the password
-UserSchema.pre("save",async function(){
-    if(!this.isModified("password")) return 
-    this.password = await bcrypt.hash(this.password,10)
+UserSchema.pre("save", async function () {
+    if (!this.isModified("password")) return
+    this.password = await bcrypt.hash(this.password, 10)
 })
 
+// compare the password 
+UserSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password)
+}
+
+// change the refresh token
+UserSchema.method.generateAccessToken = async function () {
+    return jwt.sign({
+
+        _id: this._id
+    },
+     process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
+    )
+    
+}
 
 
-const User = mongoose.model("User",UserSchema)
+
+const User = mongoose.model("User", UserSchema)
 
 
 export {
