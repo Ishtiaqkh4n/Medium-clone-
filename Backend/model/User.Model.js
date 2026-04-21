@@ -12,12 +12,22 @@ const UserSchema = new Schema({
             type: String
         }
     },
+
     username: {
         type: String,
         required: true,
         unique: true,
         minLength: 5,
         maxLength: 20
+    },
+    username:{
+        type:String,
+        required:true,
+        unique:true,
+        trim:true,
+        lowercase:true,
+        minLength:[5,"USername must be at least 5 characters"],
+        maxLength:[20,"Username cannot exceed 20 characters"]
     },
     email: {
         type: String,
@@ -26,10 +36,16 @@ const UserSchema = new Schema({
         trim: true,
         lowercase: true
     },
+
     password: {
         type: String,
         required: true,
         minLength: 8
+    },
+    password:{
+        type:String,
+        required:true,
+        minLength:[8,"Password must be at least 8 characters"]
     },
 
     refreshToken: {

@@ -6,9 +6,12 @@ const app = express();
 
 //basic setup for express server
 app.use(cors())
-//to parse json to object
-app.use(express.json())
+    //to parse json to object
+    app.use(express.json())
 
+//to parse urlencoded data convert it into javascript object and then we can user in req.body
+app.use(express.urlencoded({extended:true}))
+app.use(cookieParser())
 
 
 app.get("/",(req,res)=>{
