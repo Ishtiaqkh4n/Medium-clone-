@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-
+import cookieParser from "cookie-parser"
 
 const app = express();
 
@@ -20,12 +20,21 @@ app.get("/",(req,res)=>{
     .send("Home route of the backend")
 })
 
+app.get("/helloworld",(req,res)=>{
+    res
+    .status(200)
+    .send("Hello World! Wellcome here ")
+})
 
 
-///export health route 
+
+// /export health route 
 import healthRoute  from "./routes/healthcheck.routes.js"
-
 app.use("/api/v1/health",healthRoute)
+
+// // import auth routes
+import authRoutes from "./routes/auth.routes.js"
+app.use("/api/v1/auth",authRoutes)
 
 
 export default app;

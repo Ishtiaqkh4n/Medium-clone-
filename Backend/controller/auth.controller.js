@@ -1,6 +1,6 @@
-import {asyncHandler} from "../utils/asyncHandler.js";
-import {User} from "../models/user.model.js";
-import { ApiError } from "../utils/api-Error";
+import asyncHandler from "../utils/Async-handler.js";
+import { User } from "../model/User.Model.js";
+import { ApiError } from "../utils/api-Error.js";
 import { ApiResponse } from "../utils/api-Response.js";
 
 
@@ -45,7 +45,7 @@ if(!createUser){
 
 return res
 .status(201)
-,json(
+.json(
     new ApiResponse(
         201,
         "User registered successfully",

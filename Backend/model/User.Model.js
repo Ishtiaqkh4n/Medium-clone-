@@ -1,6 +1,9 @@
 import mongoose, { Schema } from "mongoose"
-import bcrypt from "bcryptjs"
+import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
+import dotenv from "dotenv"
+
+dotenv.config()
 
 const UserSchema = new Schema({
     avatar: {
@@ -53,12 +56,13 @@ UserSchema.methods.isPasswordCorrect = async function (password) {
 
 // change the refresh token
 UserSchema.methods.generateAccessToken = async function () {
+
     return jwt.sign(
         {
         _id: this._id
         },
-     process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn:process.env.ACCESS_TOKEN_EXPIRY}
+        "testing",
+        { expiresIn:"1d"}
     )
     
 }
@@ -68,8 +72,8 @@ UserSchema.methods.generateRefreshToken = async function(){
         {
          _id:this._id   
         },
-        process.env.REFRESH_TOKEN_SECRET,
-        {expiresIn:process.env.REFRESH_TOKEN_EXPIRY}
+       "testingtesting",
+        {expiresIn:"7d"}
     )
 }
 

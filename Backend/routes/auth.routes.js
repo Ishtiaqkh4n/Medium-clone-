@@ -9,7 +9,18 @@ import {
 } from  "../controller/auth.controller.js"
 
 
+import {
+userRegisterValidator,
+userloginValidator
+} from "../validator/validator.js"
 
+import {
+    VerifyJwt
+} from "../middleware/auth.middleware.js"
+
+import {
+    validateRequest
+} from "../middleware/validator.middleware.js"
 
 const router = Router()
 
@@ -17,9 +28,9 @@ const router = Router()
 //jwt verification
 //remaingggggg will workkkkkk on that byeeee
 
-router.route("/register").post(RegisterUser)
+router.route("/register").post(userRegisterValidator(),validateRequest,RegisterUser)
 
-router.route("/login").post(LoginUser)
+router.route("/login").post(userloginValidator(),validateRequest,LoginUser)
 
 router.route("/logout").post(LogoutUser)
 
