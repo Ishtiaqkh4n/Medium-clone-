@@ -13,13 +13,7 @@ const UserSchema = new Schema({
         }
     },
 
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        minLength: 5,
-        maxLength: 20
-    },
+  
     username:{
         type:String,
         required:true,
@@ -37,11 +31,7 @@ const UserSchema = new Schema({
         lowercase: true
     },
 
-    password: {
-        type: String,
-        required: true,
-        minLength: 8
-    },
+ 
     password:{
         type:String,
         required:true,
