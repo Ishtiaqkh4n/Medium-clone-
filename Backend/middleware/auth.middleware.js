@@ -26,26 +26,16 @@ const VerifyJwt = asyncHandler(async(req ,res ,next)=>{
     }
     
     const user = await User.findById(decoded_token?._id)
-
     if(!user){
         throw new ApiError(
             404,
-            "Invalid acesstoken"
-        )
-    }
-    //checking if tHE RT matches the AT
-    if(user.refreshToken !==token){
-        throw new ApiError(
-            404,
-            "nice try stealer fuck you"
+            "Invalid or Expired  accessToken"
         )
     }
     //attach the user to the request object 
     req.user = user
     //coninue to the next middleware or route handler
     next()
-
-
 
 })
 

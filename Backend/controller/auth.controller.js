@@ -2,7 +2,8 @@ import asyncHandler from "../utils/Async-handler.js";
 import { User } from "../model/User.Model.js";
 import { ApiError } from "../utils/api-Error.js";
 import { ApiResponse } from "../utils/api-Response.js";
-
+import { JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken"
 
 
 const RegisterUser = asyncHandler(async(req , res)=>{
@@ -114,17 +115,64 @@ const LoginUser = asyncHandler(async(req , res)=>{
 })
 
 const LogoutUser = asyncHandler(async(req , res)=>{
+
+    const LogoutUser = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set:{
+               refreshToken = ""
+            }
+        },
+        {
+            new:true
+        }
+    )
+    if(!LogoutUser){
+        throw new ApiError(
+            404,
+            "something went wrong "
+        )
+    }
+    const options = {
+        httpOnly:true,
+        secure:true
+    }
+    return res
+    .status(200)
+    .clearCookie("refreshToken",options)
+    .clearCookie("accessToken",options)
+    .json(
+        new ApiResponse(
+            200,
+            "user logged out"
+        )
+    )
     
-    
+
 })
 
 const DeleteUser = asyncHandler(async(req , res)=>{
     
+   const deletedUser = await User.findByIdAndDelete(req.user._id)
+   const options = {
+        httpOnly:true,
+        secure:true
+    }
+    return res
+    .status(204)
+    .clearCookie("refreshToken",options)
+    .clearCookie("accessToken",options)
+    .json(
+        new ApiResponse(
+            204,
+            "user deleted successfully"
+        )
+    )
+
 })
 
 
 const refreshToken = asyncHandler(async(req , res)=>{
-    
 })
 
 
