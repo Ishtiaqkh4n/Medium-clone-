@@ -81,14 +81,14 @@ UserSchema.methods.generateRefreshToken = async function(){
 }
 
 
-let check = {
-    1:process.env.ACCESS_TOKEN_SECRET,
-    2:process.env.REFRESH_TOKEN_SECRET,
-    3:process.env.ACCESS_TOKEN_EXPIRY,
-    4:process.env.REFRESH_TOKEN_EXPIRY
-}
+// let check = {
+//     1:process.env.ACCESS_TOKEN_SECRET,
+//     2:process.env.REFRESH_TOKEN_SECRET,
+//     3:process.env.ACCESS_TOKEN_EXPIRY,
+//     4:process.env.REFRESH_TOKEN_EXPIRY
+// }
 
-console.log(check)
+// console.log(check)
 
 
 

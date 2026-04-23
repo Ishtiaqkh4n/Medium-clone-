@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
     RegisterUser,
     LoginUser,
-    refreshToken,
+    refreshAccessToken,
     LogoutUser,
     DeleteUser,
     
@@ -37,8 +37,8 @@ router.route("/logout").post(VerifyJwt,LogoutUser)
 
 router.route("/delete").delete(VerifyJwt,DeleteUser)
 
-router.route("/refresh-token").post(refreshToken)
+router.route("/refresh-token").post(refreshAccessToken)
 
 
 
-export default router;
+export default router;  

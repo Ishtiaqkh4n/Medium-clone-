@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken"
 const VerifyJwt = asyncHandler(async(req ,res ,next)=>{
   
      //grab the token from the cookie
-    const token = req.cookie.accessToken
+    const token = req.cookies.accessToken  || req.header("Authorization")?.replace("Bearer ", "");
     //throw if not present
     if(!token){
         throw new ApiError(

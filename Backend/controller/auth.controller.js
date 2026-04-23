@@ -2,7 +2,6 @@ import asyncHandler from "../utils/Async-handler.js";
 import { User } from "../model/User.Model.js";
 import { ApiError } from "../utils/api-Error.js";
 import { ApiResponse } from "../utils/api-Response.js";
-import { JsonWebTokenError } from "jsonwebtoken";
 import jwt from "jsonwebtoken"
 
 
@@ -114,19 +113,20 @@ const LoginUser = asyncHandler(async(req , res)=>{
     )   
 })
 
+
 const LogoutUser = asyncHandler(async(req , res)=>{
 
-    const LogoutUser = await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $set:{
-               refreshToken = ""
-            }
-        },
-        {
-            new:true
-        }
-    )
+    const LogoutUser  =  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: "",
+      },
+    },
+    {
+      new: true,
+    },
+  );
     if(!LogoutUser){
         throw new ApiError(
             404,
@@ -170,15 +170,13 @@ const DeleteUser = asyncHandler(async(req , res)=>{
     )
 
 })
-
-
-const refreshToken = asyncHandler(async(req , res)=>{
-    const AccessToken = req.cookie.refreshToken || req.body.refreshToken
-    if(!AccessToken){
+const refreshAccessToken = asyncHandler(async(req , res)=>{
+    const RT= req.cookies.refreshToken || req.body.refreshToken
+    if(!RT){
         throw new ApiError(404,"Unauthorized access")
     }
     try {
-        const decode = jwt.verify(AccessToken,REFRESH_TOKEN_SECRET)
+        const decode = jwt.verify(RT,REFRESH_TOKEN_SECRET)
         if(!decode){
            throw new ApiError(404,"invalid token")
         }
@@ -187,7 +185,7 @@ const refreshToken = asyncHandler(async(req , res)=>{
            throw new ApiError(404,"Invalid token user with this token not found")
         }
 
-        if(AccessToken!==user.refreshToken){
+        if(RT!==user.refreshToken){
            throw new ApiError("Refresh Token is expired")
         }
         const options = {
@@ -219,13 +217,14 @@ const refreshToken = asyncHandler(async(req , res)=>{
 
 
 
+
 export{
 
     RegisterUser,
     LoginUser,
     LogoutUser,
-    refreshToken,
+    refreshAccessToken,
     DeleteUser,
-    refreshToken,
+    
 
 }
