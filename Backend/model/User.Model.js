@@ -55,10 +55,7 @@ UserSchema.methods.isPasswordCorrect = async function (password) {
 }
 
 // change the refresh token
-<<<<<<< HEAD
 
-=======
->>>>>>> 85b2455d3f1704c22a333c25b1fbf63022e4a33c
 UserSchema.methods.generateAccessToken = async function () {
 
     return jwt.sign(
