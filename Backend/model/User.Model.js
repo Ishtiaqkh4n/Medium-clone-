@@ -61,8 +61,8 @@ UserSchema.methods.generateAccessToken = async function () {
         {
         _id: this._id
         },
-        "testing",
-        { expiresIn:"1d"}
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn:"15m"}
     )
     
 }
@@ -72,10 +72,21 @@ UserSchema.methods.generateRefreshToken = async function(){
         {
          _id:this._id   
         },
-       "testingtesting",
+       process.env.REFRESH_TOKEN_SECRET,
         {expiresIn:"7d"}
     )
+
 }
+
+
+let check = {
+    1:process.env.ACCESS_TOKEN_SECRET,
+    2:process.env.REFRESH_TOKEN_SECRET,
+    3:process.env.ACCESS_TOKEN_EXPIRY,
+    4:process.env.REFRESH_TOKEN_EXPIRY
+}
+
+console.log(check)
 
 
 
