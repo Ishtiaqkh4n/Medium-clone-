@@ -173,6 +173,48 @@ const DeleteUser = asyncHandler(async(req , res)=>{
 
 
 const refreshToken = asyncHandler(async(req , res)=>{
+    const AccessToken = req.cookie.refreshToken || req.body.refreshToken
+    if(!AccessToken){
+        throw new ApiError(404,"Unauthorized access")
+    }
+    try {
+        const decode = jwt.verify(AccessToken,REFRESH_TOKEN_SECRET)
+        if(!decode){
+           throw new ApiError(404,"invalid token")
+        }
+        const user = await User.findById(decode._id)
+        if(!user){
+           throw new ApiError(404,"Invalid token user with this token not found")
+        }
+
+        if(AccessToken!==user.refreshToken){
+           throw new ApiError("Refresh Token is expired")
+        }
+        const options = {
+          httpOnly:true,
+          secure:true
+        }
+
+        const NewaccessToken = await user.generateAccessToken()
+        const NewrefreshToken = await user.generateRefreshToken()
+
+        user.refreshToken = NewrefreshToken;
+        await user.save()
+
+        return res
+        .status(200)
+        .cookie("refreshToken",NewrefreshToken,options)
+        .cookie("accessToken",NewaccessToken,options)
+        .json(
+            new ApiResponse(
+                200,
+                "Token refreshed successfully",
+            )  
+    )       
+    } catch (error) {
+        new ApiError(404,"Unauthorized access")
+    }
+
 })
 
 
@@ -183,6 +225,7 @@ export{
     LoginUser,
     LogoutUser,
     refreshToken,
-    DeleteUser
+    DeleteUser,
+    refreshToken,
 
 }

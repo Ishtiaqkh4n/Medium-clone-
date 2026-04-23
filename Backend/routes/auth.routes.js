@@ -5,7 +5,8 @@ import {
     LoginUser,
     refreshToken,
     LogoutUser,
-    DeleteUser
+    DeleteUser,
+    
 } from  "../controller/auth.controller.js"
 
 
@@ -32,10 +33,11 @@ router.route("/register").post(userRegisterValidator(),validateRequest,RegisterU
 
 router.route("/login").post(userloginValidator(),validateRequest,LoginUser)
 
-router.route("/logout").post(LogoutUser)
+router.route("/logout").post(VerifyJwt,LogoutUser)
 
-router.route("/delete").delete(DeleteUser)
+router.route("/delete").delete(VerifyJwt,DeleteUser)
 
+router.route("/refresh-token").post(refreshToken)
 
 
 
