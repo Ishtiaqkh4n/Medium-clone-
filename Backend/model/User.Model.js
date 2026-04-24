@@ -21,7 +21,7 @@ const UserSchema = new Schema({
         unique:true,
         trim:true,
         lowercase:true,
-        minLength:[5,"USername must be at least 5 characters"],
+        minLength:[5,"Username must be at least 5 characters"],
         maxLength:[20,"Username cannot exceed 20 characters"]
     },
     email: {
@@ -81,6 +81,7 @@ UserSchema.methods.generateRefreshToken = async function(){
 }
 
 
+<<<<<<< HEAD
 // let check = {
 //     1:process.env.ACCESS_TOKEN_SECRET,
 //     2:process.env.REFRESH_TOKEN_SECRET,
@@ -89,6 +90,8 @@ UserSchema.methods.generateRefreshToken = async function(){
 // }
 
 // console.log(check)
+=======
+>>>>>>> 747195d6f10431b56813ea850e56936d6a514db4
 
 
 
