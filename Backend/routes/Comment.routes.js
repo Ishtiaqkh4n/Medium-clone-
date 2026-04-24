@@ -3,7 +3,7 @@ import { Router } from "express";
 const router = Router();
 
 // Create + Get comments for a blog
-router.route("/blogs/:blogId/comments")
+router.route("/:blogId/comments")
     .post((req, res) => {
         res.send(`Create comment for blog ${req.params.blogId}`);
     })
@@ -24,5 +24,5 @@ router.route("/comments/:id")
     });
 
 
-    
+
 export default router;
