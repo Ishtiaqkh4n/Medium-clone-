@@ -2,7 +2,7 @@ import asyncHandler from "../utils/Async-handler.js";
 import { User } from "../model/User.Model.js";
 import { ApiError } from "../utils/api-Error.js";
 import { ApiResponse } from "../utils/api-Response.js";
-
+import jwt from "jsonwebtoken"
 
 
 const RegisterUser = asyncHandler(async(req , res)=>{
@@ -113,19 +113,113 @@ const LoginUser = asyncHandler(async(req , res)=>{
     )   
 })
 
+
 const LogoutUser = asyncHandler(async(req , res)=>{
+
+    const LogoutUser  =  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: "",
+      },
+    },
+    {
+      new: true,
+    },
+  );
+    if(!LogoutUser){
+        throw new ApiError(
+            404,
+            "something went wrong "
+        )
+    }
+    const options = {
+        httpOnly:true,
+        secure:true
+    }
+    return res
+    .status(200)
+    .clearCookie("refreshToken",options)
+    .clearCookie("accessToken",options)
+    .json(
+        new ApiResponse(
+            200,
+            "user logged out"
+        )
+    )
     
-    
+
 })
 
 const DeleteUser = asyncHandler(async(req , res)=>{
     
+   const deletedUser = await User.findByIdAndDelete(req.user._id)
+   const options = {
+        httpOnly:true,
+        secure:true
+    }
+    return res
+    .status(204)
+    .clearCookie("refreshToken",options)
+    .clearCookie("accessToken",options)
+    .json(
+        new ApiResponse(
+            204,
+            "user deleted successfully"
+        )
+    )
+
+})
+const refreshAccessToken = asyncHandler(async(req , res)=>{
+        const RT= req.cookies.refreshToken || req.body.refreshToken
+        if(!RT){
+        throw new ApiError(404,"Unauthorized access")
+        }
+        const decode = jwt.verify(RT,process.env.REFRESH_TOKEN_SECRET)
+        if(!decode){
+           throw new ApiError(401,"invalid token")
+        }
+        const user = await User.findById(decode._id)
+        if(!user){
+           throw new ApiError(401,"Invalid token user with this token not found")
+        }
+        if(String(RT)!==String(user.refreshToken)){
+           throw new ApiError("Refresh Token is expired")
+        }
+
+        const options = {
+          httpOnly:true,
+          secure:true
+        }
+
+        const NewaccessToken = await user.generateAccessToken()
+        const NewrefreshToken = await user.generateRefreshToken()
+
+        user.refreshToken = NewrefreshToken;
+        await user.save()
+
+        return res
+        .status(200)
+        .cookie("refreshToken",NewrefreshToken,options)
+        .cookie("accessToken",NewaccessToken,options)
+        .json(
+            new ApiResponse(
+                200,
+                "Token refreshed successfully",
+            )  
+    )       
 })
 
 
-const refreshToken = asyncHandler(async(req , res)=>{
-    
-})
+// let check = {
+//     1:process.env.ACCESS_TOKEN_SECRET,
+//     2:process.env.REFRESH_TOKEN_SECRET,
+//     3:process.env.ACCESS_TOKEN_EXPIRY,
+//     4:process.env.REFRESH_TOKEN_EXPIRY
+// }
+
+// console.log(check)
+
 
 
 
@@ -134,7 +228,8 @@ export{
     RegisterUser,
     LoginUser,
     LogoutUser,
-    refreshToken,
-    DeleteUser
+    refreshAccessToken,
+    DeleteUser,
+    
 
 }

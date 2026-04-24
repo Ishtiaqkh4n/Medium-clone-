@@ -55,6 +55,7 @@ UserSchema.methods.isPasswordCorrect = async function (password) {
 }
 
 // change the refresh token
+
 UserSchema.methods.generateAccessToken = async function () {
 
     return jwt.sign(
@@ -80,6 +81,17 @@ UserSchema.methods.generateRefreshToken = async function(){
 }
 
 
+<<<<<<< HEAD
+// let check = {
+//     1:process.env.ACCESS_TOKEN_SECRET,
+//     2:process.env.REFRESH_TOKEN_SECRET,
+//     3:process.env.ACCESS_TOKEN_EXPIRY,
+//     4:process.env.REFRESH_TOKEN_EXPIRY
+// }
+
+// console.log(check)
+=======
+>>>>>>> 747195d6f10431b56813ea850e56936d6a514db4
 
 
 
