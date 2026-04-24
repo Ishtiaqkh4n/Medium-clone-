@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { upload } from "../middlewares/Multer.middlewere.js";
 
 import {
     RegisterUser,
@@ -34,14 +35,12 @@ const router = Router()
 
 router.route("/register").post(RegisterTempUser)
 router.route("/otpverify").post(RegisterUser)
-
 router.route("/login").post(userloginValidator(),validateRequest,LoginUser)
-
 router.route("/logout").post(VerifyJwt,LogoutUser)
-
 router.route("/delete").delete(VerifyJwt,DeleteUser)
-
 router.route("/refresh-token").post(refreshAccessToken)
+router.route("/me/update/:id").put( upload.single("coverImage"),)
+
 
 
 
