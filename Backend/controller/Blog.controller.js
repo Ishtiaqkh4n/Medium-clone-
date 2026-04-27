@@ -2,11 +2,15 @@ import { Blog } from "../model/Blog.Models.js";
 import { ApiError } from "../utils/api-Error.js";
 import { ApiResponse } from "../utils/api-Response.js";
 import asyncHandler from "../utils/Async-handler.js";
+
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
-const createBlog = asyncHandler(async(req, res) => {
+import { deleteCloudinaryImage, uploadOnCloudinary } from "../utils/cloudinary.js";
+
+const createBlog = asyncHandler(async (req, res) => {
+
     const { title, body, tags } = req.body
-    const thumbnail = req.files?.thumbnail?.[0]
+    const thumbnail = req.files?.thumbnail
     let uploadedThumbnailImage = null
     if (thumbnail) {
         uploadedThumbnailImage = await uploadOnCloudinary(thumbnail);
@@ -20,11 +24,39 @@ const createBlog = asyncHandler(async(req, res) => {
 
 });
 
+const getBlogs = asyncHandler(async (req, res) => {
+
+    const blogId = req.params?.blogId
+    let blog
+    if (blogId) {
+        blog = await Blog.findById(blogId)
+    } else {
+        blog = await Blog.find()
+    }
+    if (!blog) {
+        throw new ApiError(500, 'unable to find blog check the id or internal server error')
+    }
+
+    res.status(200).json(new ApiResponse(200, "blogs fetched successfully", blog))
+
+})
 
 
 const updateBlog = asyncHandler(async (req, res) => {
+
     // 1. get blog id from params
     const { blogId } = req.params;
+    const image = req?.files?.thumbnail
+    let newThumbnailImage
+    if (image) {
+        const blog = await Blog.findById(blogId)
+        if (blog) {
+            deleteCloudinaryImage(blog.thumbnail.public_id)
+        }
+
+        newThumbnailImage = await uploadOnCloudinary(image)
+
+    }
 
     if (!blogId) {
         throw new ApiError(400, "Blog ID is required");
@@ -44,7 +76,11 @@ const updateBlog = asyncHandler(async (req, res) => {
             $set: {
                 ...(title && { title }),
                 ...(content && { content }),
-                ...(tags && { tags })
+                ...(tags && { tags }),
+                ...(newThumbnailImage && {
+                    "thumbnail.url": newThumbnailImage.url,
+                    "thumbnail.public_id": newThumbnailImage.public_id
+                })
             }
         },
         {
@@ -63,23 +99,31 @@ const updateBlog = asyncHandler(async (req, res) => {
     );
 });
 
-const deleteBlog = asyncHandler(async (req,res) => { 
-
-       const { blogId } = req.params;
+const deleteBlog = asyncHandler(async (req, res) => {
+    const { blogId } = req.params;
 
     if (!blogId) {
         throw new ApiError(400, "Blog ID is required");
     }
 
-    const deleteBlog = Blog.findByIdAndDelete(blog)
-    if (!deleteBlog) {
-        
-        throw new ApiError(401,"invalid blog id , unable to delete blog ")
+    const blog = await Blog.findById(blogId);
+
+    if (!blog) {
+        throw new ApiError(404, "Blog not found");
     }
-    return res.status(204,"blog deleted successfully")
 
- });
+    // delete image from cloudinary (if exists)
+    if (blog?.thumbnail?.public_id) {
+        await deleteCloudinaryImage(blog.thumbnail.public_id);
+    }
+
+    await Blog.findByIdAndDelete(blogId);
+
+    return res.status(200).json({
+        success: true,
+        message: "Blog deleted successfully"
+    });
+});
 
 
-
-export { updateBlog,createBlog,deleteBlog };
+export { updateBlog, createBlog, deleteBlog, getBlogs }

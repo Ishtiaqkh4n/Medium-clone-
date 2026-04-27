@@ -28,18 +28,13 @@ app.get("/helloworld",(req,res)=>{
 
 
 
-// /import health routes
+// /export health route 
 import healthRoute  from "./routes/healthcheck.routes.js"
 app.use("/api/v1/health",healthRoute)
 
 // // import auth routes
 import authRoutes from "./routes/auth.routes.js"
 app.use("/api/v1/auth",authRoutes)
-
-
-// import blog routes
-import blogRoutes from "./routes/blog.routes.js"
-app.use("/api/v1/blog",blogRoutes)
 
 
 export default app;
