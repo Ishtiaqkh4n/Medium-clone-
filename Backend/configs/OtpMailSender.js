@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { ApiError } from '../utils/api-Error';
+import { ApiError } from '../utils/api-Error.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
