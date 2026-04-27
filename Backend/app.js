@@ -7,7 +7,7 @@ const app = express();
     //basic setup for express server
     app.use(cors())
     //to parse json to object
-    app.use(express.json())
+app.use(express.json())
 
 //to parse urlencoded data convert it into javascript object and then we can user in req.body
 app.use(express.urlencoded({extended:true}))
@@ -33,8 +33,14 @@ import healthRoute  from "./routes/healthcheck.routes.js"
 app.use("/api/v1/health",healthRoute)
 
 // // import auth routes
+
 import authRoutes from "./routes/auth.routes.js"
 app.use("/api/v1/auth",authRoutes)
+
+
+// import Blog routes
+import blogroutes from "./Routes/Blog.routes.js"
+app.use("/api/v1/blog/",blogroutes)
 
 
 export default app;

@@ -11,12 +11,12 @@ const OtpSchema = new mongoose.Schema({
 
 
 // hash OTP before saving
-OtpSchema.pre("save", async function (next) {
-    if (!this.isModified("otp")) return next();
-
-    const salt = await bcrypt.genSalt(10);
-    this.otp = await bcrypt.hash(this.otp, salt);
-    next();
+OtpSchema.pre("save", async function () {
+    if (this.isModified("otp")) {
+        const salt = await bcrypt.genSalt(10);
+        this.otp = await bcrypt.hash(this.otp, salt);
+    }
+  
 });
 
 // method to compare OTP

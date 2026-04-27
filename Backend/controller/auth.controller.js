@@ -10,6 +10,7 @@ import { PendingUser } from "../model/PendingUser.Models.js";
 
 
 const RegisterTempUser = asyncHandler(async (req, res) => {
+
     const { username, email, password, changeOtp } = req.body;
 
     // check if already registered user exists
@@ -34,6 +35,10 @@ const RegisterTempUser = asyncHandler(async (req, res) => {
 
         // generate new otp
         const newOtpValue = generateOTP();
+        // resend email
+        const isOtpSent = await otpMailSender(newOtpValue, email);
+
+        if (!isOtpSent.data) throw new ApiError(500, "OTP resend failed");
 
         const newOtp = await Otp.create({
             otp: newOtpValue,
@@ -44,9 +49,6 @@ const RegisterTempUser = asyncHandler(async (req, res) => {
         pendingUser.otp = newOtp._id;
         await pendingUser.save();
 
-        // resend email
-        const isSent = await otpMailSender(newOtpValue, email);
-        if (!isSent) throw new ApiError(500, "OTP resend failed");
 
         return res.status(200).json(
             new ApiResponse(200, "New OTP sent successfully")
@@ -60,7 +62,9 @@ const RegisterTempUser = asyncHandler(async (req, res) => {
     const otpValue = generateOTP();
 
     const isOtpSent = await otpMailSender(otpValue, email);
-    if (!isOtpSent) {
+    console.log("resend responce")
+    console.log(isOtpSent)
+    if (!isOtpSent.data) {
         throw new ApiError(500, "Unable to send OTP");
     }
 
@@ -87,36 +91,39 @@ const RegisterTempUser = asyncHandler(async (req, res) => {
     );
 });
 
+
+
+
 const RegisterUser = asyncHandler(async (req, res) => {
 
     if (req.body.length === 0) throw new ApiError(401, "Empty responce")
     const { otp, email } = req.body
 
-    const tempUser = await PendingUser.findOne({ email }).populate("otpId")
+    const tempUser = await PendingUser.findOne({ email }).populate("otp").select("+password +username +email")
 
     if (!tempUser) {
 
         throw new ApiError(404, "user not found")
     }
 
-    const isValid = await tempUser.otpId.compareOtp(otp);
+    const isValid = await tempUser.otp.isOtpValid(otp.toString());
 
     if (!isValid) {
         throw new ApiError(401, "Incorrect Otp")
     }
-
+console.log(tempUser.username,tempUser.email,tempUser.password) // it is okay
     const user = await User.create(
         {
             username: tempUser.username,
             email: tempUser.email,
             password: tempUser.password
-        },
-        { validateBeforeSave: false }
+        }
     );
     if (user) {
-        await Otp.findByIdAndDelete(pendingUser.otp._id);
-        await PendingUser.findByIdAndDelete(pendingUser._id);
+        await Otp.findByIdAndDelete(tempUser.otp._id);
+        await PendingUser.findByIdAndDelete(tempUser._id);
     }
+
 
     return res.status(201).json(new ApiResponse(201, "User created successfully"));
 });
@@ -247,5 +254,5 @@ export {
     RegisterUser,
     LoginUser,
     LogoutUser,
-     DeleteUser,
+    DeleteUser,
 }

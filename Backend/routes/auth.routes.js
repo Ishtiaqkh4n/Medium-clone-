@@ -18,13 +18,13 @@ import VerifyRefreshToken from "../middlewares/VerifyRefreshToken.middlewere.js"
 
 
 const router = Router()
+router.route("/register").post(RegisterTempUser)
+router.route("/login").post(LoginUser)
+router.route("/otpverify").post(RegisterUser)
 
 router.route("/refresh-token").post(VerifyRefreshToken)
 
 router.use(requireAuth)
-router.route("/register").post(RegisterTempUser)
-router.route("/otpverify").post(RegisterUser)
-router.route("/login").post(LoginUser)
 router.route("/logout").post(LogoutUser)
 router.route("/delete").delete(DeleteUser)
 router.route("/me/update/:id").put( upload.single("coverImage"),)
