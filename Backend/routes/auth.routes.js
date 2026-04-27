@@ -8,7 +8,7 @@ import {
     LogoutUser,
     DeleteUser,
     
-} from  "../controller/auth.controller.js"
+} from  "../controller/Auth.controller.js"
 
 import requireAuth from "../middlewares/Auth.middlewere.js";
 import VerifyRefreshToken from "../middlewares/VerifyRefreshToken.middlewere.js";
