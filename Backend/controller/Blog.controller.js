@@ -3,19 +3,25 @@ import { ApiError } from "../utils/api-Error.js";
 import { ApiResponse } from "../utils/api-Response.js";
 import asyncHandler from "../utils/Async-handler.js";
 
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 import { deleteCloudinaryImage, uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const createBlog = asyncHandler(async (req, res) => {
-
+    console.log("user  id is ",req.userId)
     const { title, body, tags } = req.body
     const thumbnail = req.files?.thumbnail
     let uploadedThumbnailImage = null
     if (thumbnail) {
         uploadedThumbnailImage = await uploadOnCloudinary(thumbnail);
     }
-    const blog = Blog.create(req.user._id, { title, body, tags, thumbnail: { imageUrl: thumbnail?.url, public_id: thumbnail?.public_id } });
+    const blog = Blog.create({
+             author:req.userId,
+             title,
+             body,
+             tags,
+             thumbnail: { imageUrl: thumbnail?.url, public_id: thumbnail?.public_id } 
+            }
+            );
     if (!blog) {
         throw new ApiError(500, "Unable to create blog")
     }

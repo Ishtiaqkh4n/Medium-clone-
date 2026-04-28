@@ -12,14 +12,14 @@ router.use(requireAuth)
 
 
 // Create a blog
-router.route('/').post(upload.single('thumbnail'),createBlog)
+router.route('/create-blog').post(upload.single('thumbnail'),createBlog)
 // Get blogs 
-router.route('/').get(getBlogs)
+router.route('/get-blog').get(getBlogs)
 // Get single blog
-router.route('/:blogId').get(getBlogs)
+router.route('/get-blog/:blogId').get(getBlogs)
 // Update blog
-router.route('/:blogId').put(upload.single('thumbnail'),updateBlog)
+router.route('/update-blog/:blogId').put(upload.single('thumbnail'),updateBlog)
 // Delete blog
-router.route('/:blogId').delete(deleteBlog)
+router.route('/delete/:blogId').delete(deleteBlog)
 
 export default router;

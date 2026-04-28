@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const BlogSchemea = new mongoose.Schema({
+const BlogSchemea = mongoose.Schema({
     author: { type: String, required: true },
     thumbnail: {
         imageUrl: {
