@@ -8,14 +8,21 @@ import {
     getcommentsController,
     deletecommentController,
     getsingleCommentController,
-    updatesinglecommnentController
+    updatesinglecommnentController,
 }from "../controller/comment.controller.js"
 
 
 
 route.route(requireAuth)
 
-//connect to the router!!!!!
+router.route("/:blogId/comments")
+.get(getcommentsController)
+.post(createcommentController)
+
+router.route("/comments/:id")
+.get(getsingleCommentController)
+.patch(updatesinglecommnentController)
+.delete(deletecommentController)
 
 // Create + Get comments for a blog
 router.route("/:blogId/comments")
